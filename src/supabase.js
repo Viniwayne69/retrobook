@@ -58,39 +58,6 @@ export const defaultTribes = [
   }
 ];
 
-export const samplePosts = [
-  {
-    id: "sample-one",
-    book_title: "Crime e Castigo",
-    content: "Raskólnikov parece caminhar dentro de uma cidade que também adoeceu. Cada rua tem culpa, febre e uma espécie de silêncio moral.",
-    likes_count: 18,
-    created_at: new Date().toISOString(),
-    profiles: { name: "Ana Martins", username: "anamartins" },
-    user_liked: false,
-    is_sample: true
-  },
-  {
-    id: "sample-two",
-    book_title: "Dom Casmurro",
-    content: "Machado transforma um gesto pequeno em uma vida inteira de suspeita. É quase assustador como uma memória pode aprender a se defender.",
-    likes_count: 12,
-    created_at: new Date().toISOString(),
-    profiles: { name: "Leonardo Vale", username: "leonardovale" },
-    user_liked: false,
-    is_sample: true
-  },
-  {
-    id: "sample-three",
-    book_title: "Mrs. Dalloway",
-    content: "Virginia Woolf me dá a sensação de que a memória não volta como lembrança, volta como luz atravessando uma sala.",
-    likes_count: 25,
-    created_at: new Date().toISOString(),
-    profiles: { name: "Clara Ribeiro", username: "clararibeiro" },
-    user_liked: false,
-    is_sample: true
-  }
-];
-
 function client() {
   if (!supabase) {
     throw new Error("Configure o Supabase no arquivo .env para usar esta ação.");
