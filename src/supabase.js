@@ -1,10 +1,14 @@
 import { createClient } from "@supabase/supabase-js";
 import { slugify } from "./utils.js";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const fallbackSupabaseUrl = "https://aulzpeqfjbqoxfalirgm.supabase.co";
+const fallbackSupabaseKey = "sb_publishable_elE0iBNf_UEB6PPb-9HHvQ_7iHeYec6";
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || fallbackSupabaseUrl;
 const supabaseKey =
   import.meta.env.VITE_SUPABASE_ANON_KEY ||
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  fallbackSupabaseKey;
 
 export const hasSupabaseConfig = Boolean(supabaseUrl && supabaseKey);
 export const supabase = hasSupabaseConfig ? createClient(supabaseUrl, supabaseKey) : null;
