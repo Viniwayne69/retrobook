@@ -75,7 +75,7 @@ export const Register = {
       try {
         const payload = formDataToObject(form);
         payload.username = normalizeUsername(payload.username);
-        await registerUser(payload);
+        await registerUser(payload, `${window.location.origin}/login`);
         await ctx.refresh();
 
         if (ctx.state.user) {

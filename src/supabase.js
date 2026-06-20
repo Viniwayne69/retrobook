@@ -130,7 +130,7 @@ export async function getProfile(userId) {
   return data;
 }
 
-export async function registerUser(payload) {
+export async function registerUser(payload, redirectTo) {
   const database = client();
   const username = payload.username;
 
@@ -161,6 +161,7 @@ export async function registerUser(payload) {
     email: payload.email,
     password: payload.password,
     options: {
+      emailRedirectTo: redirectTo,
       data: profileData
     }
   });
