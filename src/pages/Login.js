@@ -17,7 +17,6 @@ export const Login = {
       setup,
       children: `
         <div class="auth-heading">
-          <p class="eyebrow">Entre na sua conta</p>
           <p>A rede social dos pensadores.</p>
         </div>
 
