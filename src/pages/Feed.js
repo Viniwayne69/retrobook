@@ -1,5 +1,5 @@
 import { PostCard } from "../components/PostCard.js";
-import { listPosts, listRecentDiscussions, togglePostLike } from "../supabase.js";
+import { getOrCreateConversation, listPosts, listRecentDiscussions, togglePostLike } from "../supabase.js";
 import { escapeHtml } from "../utils.js";
 
 export const Feed = {
@@ -26,7 +26,7 @@ export const Feed = {
       ? discussions.map((discussion) => `
           <a class="compact-thread app-card" href="/discussao/${escapeHtml(discussion.id)}" data-link>
             <strong>${escapeHtml(discussion.title)}</strong>
-              <span>${escapeHtml(discussion.tribes?.name || discussion.book_title || "Discussão literária")}</span>
+            <span>${escapeHtml(discussion.tribes?.name || discussion.book_title || "Discussão literária")}</span>
           </a>
         `).join("")
       : `<div class="compact-thread muted app-card">Nenhuma discussão ativa por enquanto.</div>`;
@@ -107,6 +107,24 @@ export const Feed = {
     document.querySelectorAll("[data-comment-post]").forEach((button) => {
       button.addEventListener("click", () => {
         ctx.toast("Comentários por post entram na próxima evolução do banco.");
+      });
+    });
+
+    document.querySelectorAll("[data-converse-post]").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const post = ctx.currentPosts.find((item) => item.id === button.dataset.conversePost);
+
+        if (!post || post.user_id === ctx.user.id) {
+          ctx.toast("Este post é seu.");
+          return;
+        }
+
+        try {
+          const conversation = await getOrCreateConversation(ctx.user.id, post.user_id, post.book_id || null);
+          ctx.navigate(`/mensagens?conversation=${conversation.id}`);
+        } catch (error) {
+          ctx.toast(error.message || "Não foi possível abrir a conversa.");
+        }
       });
     });
   }

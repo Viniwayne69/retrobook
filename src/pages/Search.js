@@ -1,17 +1,27 @@
-import { joinTribe, searchRetrobook } from "../supabase.js";
+import { findReaderMatches, getOrCreateConversation, joinTribe, searchRetrobook } from "../supabase.js";
 import { escapeHtml, initials } from "../utils.js";
 
 export const Search = {
-  async render() {
+  async render(ctx) {
+    let matches = { sameBook: [], similarBooks: [], similarIdeas: [] };
+
+    try {
+      matches = await findReaderMatches(ctx.user.id);
+    } catch {
+      matches = { sameBook: [], similarBooks: [], similarIdeas: [] };
+    }
+
     return `
       <section class="search-page">
         <header class="social-page-head">
           <div>
             <p class="eyebrow">Pesquisar</p>
             <h1>Encontre leitores e clubes.</h1>
-            <p>Busque pelo ID de uma pessoa, nome de clube ou tribo literária.</p>
+            <p>Busque pessoas, tribos e conversas, ou comece por leitores com afinidade ao seu livro atual.</p>
           </div>
         </header>
+
+        ${ReaderMatches(matches)}
 
         <form class="search-box app-card" data-search-form>
           <label for="search-query">Pesquisar no Retrobook</label>
@@ -35,6 +45,8 @@ export const Search = {
     const form = document.querySelector("[data-search-form]");
     const results = document.querySelector("[data-search-results]");
 
+    bindMatchActions(ctx);
+
     form?.addEventListener("submit", async (event) => {
       event.preventDefault();
       const query = new FormData(form).get("query");
@@ -55,6 +67,72 @@ export const Search = {
     });
   }
 };
+
+function ReaderMatches(matches) {
+  const total = matches.sameBook.length + matches.similarBooks.length + matches.similarIdeas.length;
+
+  if (!total) {
+    return `
+      <section class="match-board app-card">
+        <div>
+          <span class="mini-label">Afinidades</span>
+          <h2>Escolha seu livro atual</h2>
+          <p>Quando sua estante tiver um livro atual salvo, o Retrobook começa a sugerir leitores próximos.</p>
+        </div>
+        <a class="btn btn-secondary secondary-button" href="/perfil" data-link>Atualizar perfil</a>
+      </section>
+    `;
+  }
+
+  return `
+    <section class="match-board app-card">
+      <div class="section-heading paper-heading">
+        <h2 class="section-title">Leitores com afinidade</h2>
+        <a href="/perfil" data-link>Editar livro atual</a>
+      </div>
+      ${MatchSection("Lendo o mesmo livro", matches.sameBook)}
+      ${MatchSection("Livros parecidos", matches.similarBooks)}
+      ${MatchSection("Ideias parecidas", matches.similarIdeas)}
+    </section>
+  `;
+}
+
+function MatchSection(title, readers) {
+  if (!readers.length) {
+    return "";
+  }
+
+  return `
+    <div class="match-section">
+      <h3>${escapeHtml(title)}</h3>
+      <div class="match-list">
+        ${readers.map((reader) => ReaderMatchCard(reader)).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function ReaderMatchCard(profile) {
+  const avatar = profile.avatar_url
+    ? `<img src="${escapeHtml(profile.avatar_url)}" alt="">`
+    : `<span>${escapeHtml(initials(profile.name || profile.username || "Leitor"))}</span>`;
+
+  return `
+    <article class="reader-match-card">
+      <div class="profile-photo small">${avatar}</div>
+      <div>
+        <strong>${escapeHtml(profile.name || "Leitor Retrobook")}</strong>
+        <span>@${escapeHtml(profile.username || "leitor")}</span>
+        <small>${escapeHtml(profile.current_book || "Livro atual não informado")}</small>
+      </div>
+      <em>${profile.affinity_score || 18}%</em>
+      <div class="reader-match-actions">
+        <a class="btn btn-secondary secondary-button" href="/perfil/${escapeHtml(profile.id)}" data-link>Perfil</a>
+        <button class="btn btn-primary primary-button" type="button" data-start-conversation="${escapeHtml(profile.id)}" data-book-id="${escapeHtml(profile.current_book_id || "")}">Conversar</button>
+      </div>
+    </article>
+  `;
+}
 
 function renderResults(data) {
   const people = data.profiles.length
@@ -92,7 +170,7 @@ function PersonResult(profile) {
       </div>
       <div class="result-actions">
         <a class="btn btn-secondary secondary-button" href="/perfil/${escapeHtml(profile.id)}" data-link>Ver perfil</a>
-        <button class="btn btn-primary primary-button" type="button" data-message-person="${escapeHtml(profile.id)}">Mensagem</button>
+        <button class="btn btn-primary primary-button" type="button" data-start-conversation="${escapeHtml(profile.id)}" data-book-id="${escapeHtml(profile.current_book_id || "")}">Mensagem</button>
       </div>
     </article>
   `;
@@ -115,6 +193,19 @@ function TribeResult(tribe) {
   `;
 }
 
+function bindMatchActions(ctx) {
+  document.querySelectorAll("[data-start-conversation]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      try {
+        const conversation = await getOrCreateConversation(ctx.user.id, button.dataset.startConversation, button.dataset.bookId || null);
+        ctx.navigate(`/mensagens?conversation=${conversation.id}`);
+      } catch (error) {
+        ctx.toast(error.message || "Não foi possível abrir a conversa.");
+      }
+    });
+  });
+}
+
 function bindResultActions(ctx) {
   document.querySelectorAll("[data-join-tribe]").forEach((button) => {
     button.addEventListener("click", async () => {
@@ -128,10 +219,5 @@ function bindResultActions(ctx) {
     });
   });
 
-  document.querySelectorAll("[data-message-person]").forEach((button) => {
-    button.addEventListener("click", () => {
-      ctx.navigate("/mensagens");
-      ctx.toast("Abra ou crie uma conversa para enviar mensagem.");
-    });
-  });
+  bindMatchActions(ctx);
 }

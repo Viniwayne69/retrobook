@@ -16,10 +16,8 @@ export const Register = {
       mode: "register",
       setup,
       children: `
-        <div class="auth-heading">
-          <p class="eyebrow">Novo perfil</p>
-          <h1>Crie sua presença entre leitores.</h1>
-          <p>Seu perfil mostra quem você é, o livro que está lendo e as reflexões que decidir compartilhar.</p>
+        <div class="auth-heading compact">
+          <p>A rede social dos pensadores.</p>
         </div>
 
         <form class="stacked-form two-columns auth-form" data-register-form>

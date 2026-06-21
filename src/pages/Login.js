@@ -16,7 +16,7 @@ export const Login = {
       mode: "login",
       setup,
       children: `
-        <div class="auth-heading">
+        <div class="auth-heading compact">
           <p>A rede social dos pensadores.</p>
         </div>
 

@@ -22,11 +22,6 @@ export function AuthFrame({ mode = "login", setup = "", children = "" }) {
 
         <div class="auth-form-side">
           <div class="auth-form-card">
-            <div class="auth-mobile-brand">
-              <span class="auth-brand-mark">R</span>
-              <strong>Retrobook</strong>
-            </div>
-
             <nav class="auth-choice" aria-label="Escolha de autenticação">
               <a class="${isLogin ? "active" : ""}" href="/login" data-link>Entrar</a>
               <a class="${isLogin ? "" : "active"}" href="/cadastro" data-link>Faça seu cadastro</a>

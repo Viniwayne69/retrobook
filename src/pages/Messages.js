@@ -1,4 +1,4 @@
-import { listConversations, listMessages, sendMessage } from "../supabase.js";
+import { listConversations, listMessages, sendMessage, subscribeToConversation } from "../supabase.js";
 import { escapeHtml, formatDate, initials } from "../utils.js";
 
 export const Messages = {
@@ -11,7 +11,7 @@ export const Messages = {
       : `
         <div class="message-empty">
           <h2>Nenhuma conversa ainda</h2>
-          <p>Quando as conversas individuais ou de clubes forem criadas, elas aparecem aqui.</p>
+          <p>Quando você iniciar uma conversa com outro leitor, ela aparece aqui.</p>
         </div>
       `;
 
@@ -21,7 +21,7 @@ export const Messages = {
           <div>
             <p class="eyebrow">Mensagens</p>
             <h1>Conversas entre leitores.</h1>
-            <p>Mensagens individuais e conversas de clubes ficam no mesmo lugar.</p>
+            <p>Fale com pessoas que estão lendo o mesmo livro, compartilhe impressões e aproxime amizades.</p>
           </div>
         </header>
 
@@ -42,6 +42,8 @@ export const Messages = {
   },
 
   async afterRender(ctx) {
+    const selectedId = new URLSearchParams(window.location.search).get("conversation");
+
     document.querySelectorAll("[data-conversation]").forEach((button) => {
       button.addEventListener("click", async () => {
         const conversation = ctx.currentConversations.find((item) => item.id === button.dataset.conversation);
@@ -53,19 +55,25 @@ export const Messages = {
         await openConversation(ctx, conversation);
       });
     });
+
+    if (selectedId) {
+      const selected = ctx.currentConversations.find((item) => item.id === selectedId) || { id: selectedId, title: "Conversa", type: "direct" };
+      await openConversation(ctx, selected);
+    }
   }
 };
 
 function ConversationItem(conversation) {
   const title = conversation.title || conversation.tribes?.name || "Conversa";
   const type = conversation.type === "club" ? "Clube" : "Individual";
+  const book = conversation.books?.title ? ` sobre ${conversation.books.title}` : "";
 
   return `
     <button class="conversation-item" type="button" data-conversation="${escapeHtml(conversation.id)}">
       <span class="club-icon small">${escapeHtml(initials(title))}</span>
       <span>
         <strong>${escapeHtml(title)}</strong>
-        <small>${type} · ${formatDate(conversation.updated_at)}</small>
+        <small>${type}${escapeHtml(book)} · ${formatDate(conversation.updated_at)}</small>
       </span>
       ${conversation.unread_count ? `<em>${conversation.unread_count}</em>` : ""}
     </button>
@@ -99,6 +107,17 @@ async function openConversation(ctx, conversation) {
     </form>
   `;
 
+  scrollThreadToBottom();
+  ctx.activeConversationChannel?.unsubscribe?.();
+  ctx.activeConversationChannel = subscribeToConversation(conversation.id, async () => {
+    const updatedMessages = await listMessages(conversation.id);
+    const thread = panel.querySelector("[data-message-thread]");
+    thread.innerHTML = updatedMessages.length
+      ? updatedMessages.map((message) => MessageBubble(message, ctx.user.id)).join("")
+      : `<div class="message-empty inline"><p>A conversa ainda não tem mensagens.</p></div>`;
+    scrollThreadToBottom();
+  });
+
   const form = panel.querySelector("[data-message-form]");
   form?.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -106,8 +125,11 @@ async function openConversation(ctx, conversation) {
     try {
       const content = new FormData(form).get("content");
       await sendMessage(conversation.id, ctx.user.id, content);
-      ctx.toast("Mensagem enviada.");
-      await openConversation(ctx, conversation);
+      form.reset();
+      const updatedMessages = await listMessages(conversation.id);
+      const thread = panel.querySelector("[data-message-thread]");
+      thread.innerHTML = updatedMessages.map((message) => MessageBubble(message, ctx.user.id)).join("");
+      scrollThreadToBottom();
     } catch (error) {
       ctx.toast(error.message || "Não foi possível enviar a mensagem.");
     }
@@ -125,4 +147,12 @@ function MessageBubble(message, userId) {
       <span>${formatDate(message.created_at)}</span>
     </article>
   `;
+}
+
+function scrollThreadToBottom() {
+  const thread = document.querySelector("[data-message-thread]");
+
+  if (thread) {
+    thread.scrollTop = thread.scrollHeight;
+  }
 }

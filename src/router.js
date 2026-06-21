@@ -187,7 +187,7 @@ function bindGlobalEvents() {
     }
 
     event.preventDefault();
-    navigate(url.pathname);
+    navigate(`${url.pathname}${url.search}`);
   });
 }
 
