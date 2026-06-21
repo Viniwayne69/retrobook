@@ -9,7 +9,7 @@ export const Search = {
           <div>
             <p class="eyebrow">Pesquisar</p>
             <h1>Encontre leitores e clubes.</h1>
-            <p>Busque pelo ID de uma pessoa, nome de clube ou tribo literaria.</p>
+            <p>Busque pelo ID de uma pessoa, nome de clube ou tribo literária.</p>
           </div>
         </header>
 
@@ -47,7 +47,7 @@ export const Search = {
       } catch (error) {
         results.innerHTML = `
           <div class="social-empty app-card">
-            <h2>Nao foi possivel pesquisar</h2>
+            <h2>Não foi possível pesquisar</h2>
             <p>${escapeHtml(error.message || "Tente novamente em instantes.")}</p>
           </div>
         `;
@@ -88,7 +88,7 @@ function PersonResult(profile) {
       <div>
         <h3>${escapeHtml(profile.name || "Leitor Retrobook")}</h3>
         <p>@${escapeHtml(profile.username || "leitor")}</p>
-        <span>${escapeHtml(profile.current_book || "Livro atual nao informado")}</span>
+        <span>${escapeHtml(profile.current_book || "Livro atual não informado")}</span>
       </div>
       <div class="result-actions">
         <a class="btn btn-secondary secondary-button" href="/perfil/${escapeHtml(profile.id)}" data-link>Ver perfil</a>
@@ -104,7 +104,7 @@ function TribeResult(tribe) {
       <div class="club-icon">${escapeHtml(initials(tribe.name || "Clube"))}</div>
       <div>
         <h3>${escapeHtml(tribe.name)}</h3>
-        <p>${escapeHtml(tribe.description || "Clube literario")}</p>
+        <p>${escapeHtml(tribe.description || "Clube literário")}</p>
         <span>${tribe.members_count || 0} membros</span>
       </div>
       <div class="result-actions">
@@ -120,10 +120,10 @@ function bindResultActions(ctx) {
     button.addEventListener("click", async () => {
       try {
         await joinTribe(button.dataset.joinTribe, ctx.user.id);
-        ctx.toast("Voce entrou no clube.");
+        ctx.toast("Você entrou no clube.");
         button.textContent = "Membro";
       } catch (error) {
-        ctx.toast(error.message || "Nao foi possivel entrar.");
+        ctx.toast(error.message || "Não foi possível entrar.");
       }
     });
   });

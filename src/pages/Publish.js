@@ -12,13 +12,13 @@ export const Publish = {
           <div>
             <p class="eyebrow">Publicar</p>
             <h1>Compartilhe uma leitura.</h1>
-            <p>Escreva como quem deixa uma anotacao na margem de um livro.</p>
+            <p>Escreva como quem deixa uma anotação na margem de um livro.</p>
           </div>
         </header>
 
         <form class="publish-card app-card" data-publish-form>
-          <label for="content">O que voce quer dizer?</label>
-          <textarea id="content" name="content" rows="7" placeholder="Escreva sua reflexao sobre o livro que esta lendo." required></textarea>
+          <label for="content">O que você quer dizer?</label>
+          <textarea id="content" name="content" rows="7" placeholder="Escreva sua reflexão sobre o livro que está lendo." required></textarea>
 
           <div class="two-columns">
             <div>
@@ -53,10 +53,10 @@ export const Publish = {
       try {
         const payload = formDataToObject(form);
         await createPost(ctx.user.id, payload);
-        ctx.toast("Sua publicacao entrou no feed.");
+        ctx.toast("Sua publicação entrou no feed.");
         ctx.navigate("/feed");
       } catch (error) {
-        ctx.toast(error.message || "Nao foi possivel publicar.");
+        ctx.toast(error.message || "Não foi possível publicar.");
       }
     });
   }

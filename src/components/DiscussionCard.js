@@ -14,11 +14,11 @@ export function DiscussionCard(discussion) {
       </header>
       <p>${escapeHtml(discussion.question)}</p>
       <div class="discussion-meta">
-        <span>${escapeHtml(discussion.chapter || "Discussao aberta")}</span>
+        <span>${escapeHtml(discussion.chapter || "Discussão aberta")}</span>
         <span>${escapeHtml(author)}</span>
         <span>${formatDate(discussion.created_at)}</span>
       </div>
-      <a class="text-link" href="/discussao/${escapeHtml(discussion.id)}" data-link>Abrir discussao</a>
+      <a class="text-link" href="/discussao/${escapeHtml(discussion.id)}" data-link>Abrir discussão</a>
     </article>
   `;
 }

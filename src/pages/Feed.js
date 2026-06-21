@@ -16,8 +16,8 @@ export const Feed = {
       ? posts.map((post) => PostCard(post, ctx.state.savedPosts.has(post.id))).join("")
       : `
         <section class="social-empty app-card">
-          <h2>O feed ainda esta em silencio</h2>
-          <p>Quando voce ou outros leitores publicarem reflexoes reais, elas aparecem aqui.</p>
+          <h2>O feed ainda está em silêncio</h2>
+          <p>Quando você ou outros leitores publicarem reflexões reais, elas aparecem aqui.</p>
           <a class="btn btn-primary primary-button" href="/publicar" data-link>Publicar agora</a>
         </section>
       `;
@@ -26,10 +26,10 @@ export const Feed = {
       ? discussions.map((discussion) => `
           <a class="compact-thread app-card" href="/discussao/${escapeHtml(discussion.id)}" data-link>
             <strong>${escapeHtml(discussion.title)}</strong>
-            <span>${escapeHtml(discussion.tribes?.name || discussion.book_title || "Discussao literaria")}</span>
+              <span>${escapeHtml(discussion.tribes?.name || discussion.book_title || "Discussão literária")}</span>
           </a>
         `).join("")
-      : `<div class="compact-thread muted app-card">Nenhuma discussao ativa por enquanto.</div>`;
+      : `<div class="compact-thread muted app-card">Nenhuma discussão ativa por enquanto.</div>`;
 
     return `
       <section class="social-layout">
@@ -45,12 +45,12 @@ export const Feed = {
 
           ${currentBook ? `
             <section class="reading-status app-card">
-              <span>Voce esta lendo</span>
+              <span>Você está lendo</span>
               <strong>${escapeHtml(currentBook)}</strong>
             </section>
           ` : `
             <section class="reading-status app-card">
-              <span>Seu perfil ainda nao informa um livro atual</span>
+              <span>Seu perfil ainda não informa um livro atual</span>
               <a href="/perfil" data-link>Adicionar no perfil</a>
             </section>
           `}
@@ -68,7 +68,7 @@ export const Feed = {
           </section>
 
           <section class="side-widget app-card">
-            <h2>Discussoes ativas</h2>
+            <h2>Discussões ativas</h2>
             <div class="compact-list">
               ${discussionsHtml}
             </div>
@@ -92,7 +92,7 @@ export const Feed = {
           await togglePostLike(ctx.user.id, post);
           await ctx.refresh();
         } catch (error) {
-          ctx.toast(error.message || "Nao foi possivel curtir este post.");
+          ctx.toast(error.message || "Não foi possível curtir este post.");
         }
       });
     });
@@ -106,7 +106,7 @@ export const Feed = {
 
     document.querySelectorAll("[data-comment-post]").forEach((button) => {
       button.addEventListener("click", () => {
-        ctx.toast("Comentarios por post entram na proxima evolucao do banco.");
+        ctx.toast("Comentários por post entram na próxima evolução do banco.");
       });
     });
   }

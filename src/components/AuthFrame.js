@@ -9,14 +9,14 @@ export function AuthFrame({ mode = "login", setup = "", children = "" }) {
             <span class="auth-brand-mark">R</span>
             <div>
               <strong>Retrobook</strong>
-              <span>Pessoas se conectam pelos livros que estao lendo.</span>
+              <span>Pessoas se conectam pelos livros que estão lendo.</span>
             </div>
           </div>
 
           <div class="auth-slider" aria-hidden="true">
-            ${Slide("/auth/cs-lewis.jpg", "C. S. Lewis", "Leitura, imaginacao e fe")}
+            ${Slide("/auth/cs-lewis.jpg", "C. S. Lewis", "Leitura, imaginação e fé")}
             ${Slide("/auth/clarice.jpg", "Clarice Lispector", "Intimidade, linguagem e espanto")}
-            ${Slide("/auth/dostoievski.jpg", "Fiodor Dostoievski", "Consciencia, culpa e liberdade")}
+            ${Slide("/auth/dostoievski.jpg", "Fiódor Dostoiévski", "Consciência, culpa e liberdade")}
             ${Slide("/auth/oscar-wilde.jpg", "Oscar Wilde", "Beleza, ironia e pensamento")}
           </div>
 
@@ -35,9 +35,9 @@ export function AuthFrame({ mode = "login", setup = "", children = "" }) {
               <strong>Retrobook</strong>
             </div>
 
-            <nav class="auth-choice" aria-label="Escolha de autenticacao">
+            <nav class="auth-choice" aria-label="Escolha de autenticação">
               <a class="${isLogin ? "active" : ""}" href="/login" data-link>Entrar</a>
-              <a class="${isLogin ? "" : "active"}" href="/cadastro" data-link>Faca seu cadastro</a>
+              <a class="${isLogin ? "" : "active"}" href="/cadastro" data-link>Faça seu cadastro</a>
             </nav>
 
             ${setup}

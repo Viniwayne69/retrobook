@@ -14,7 +14,7 @@ export function PostCard(post, saved = false) {
     ? `<img src="${escapeHtml(profile.avatar_url)}" alt="">`
     : `<span>${escapeHtml(initials(author))}</span>`;
   const authorLine = currentBook
-    ? `${escapeHtml(author)} esta lendo ${escapeHtml(currentBook)}`
+    ? `${escapeHtml(author)} está lendo ${escapeHtml(currentBook)}`
     : `${escapeHtml(author)} compartilhou uma leitura`;
   const authorName = post.author_name
     ? `<span class="post-meta-dot">Autor: ${escapeHtml(post.author_name)}</span>`
@@ -35,7 +35,7 @@ export function PostCard(post, saved = false) {
       ${image}
 
       <div class="post-meta-row">
-        <span>${escapeHtml(post.book_title || "Livro nao informado")}</span>
+        <span>${escapeHtml(post.book_title || "Livro não informado")}</span>
         ${authorName}
       </div>
 

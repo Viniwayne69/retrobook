@@ -88,7 +88,7 @@ async function openConversation(ctx, conversation) {
     <div class="message-thread" data-message-thread>
       ${messages.length ? messages.map((message) => MessageBubble(message, ctx.user.id)).join("") : `
         <div class="message-empty inline">
-          <p>A conversa ainda nao tem mensagens.</p>
+          <p>A conversa ainda não tem mensagens.</p>
         </div>
       `}
     </div>
@@ -109,7 +109,7 @@ async function openConversation(ctx, conversation) {
       ctx.toast("Mensagem enviada.");
       await openConversation(ctx, conversation);
     } catch (error) {
-      ctx.toast(error.message || "Nao foi possivel enviar a mensagem.");
+      ctx.toast(error.message || "Não foi possível enviar a mensagem.");
     }
   });
 }

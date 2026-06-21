@@ -106,7 +106,7 @@ async function renderRoute() {
   if (route.protected && !state.user) {
     window.history.replaceState({}, "", "/login");
     await renderRoute();
-    toast("Entre na sua conta para acessar essa área do Retrobooks.");
+    toast("Entre na sua conta para acessar essa área do Retrobook.");
     return;
   }
 
@@ -208,7 +208,7 @@ function bindShellEvents() {
       await signOutUser();
       await syncAuth();
       navigate("/login");
-      toast("Você saiu do Retrobooks.");
+      toast("Você saiu do Retrobook.");
     });
   }
 }

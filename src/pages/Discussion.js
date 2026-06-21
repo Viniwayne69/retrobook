@@ -24,7 +24,7 @@ export const Discussion = {
 
     const commentsHtml = comments.length
       ? comments.map((comment) => {
-          const author = comment.profiles?.name || "Leitor Retrobooks";
+          const author = comment.profiles?.name || "Leitor Retrobook";
           return `
             <article class="comment-card">
               <div class="avatar small">${escapeHtml(initials(author))}</div>

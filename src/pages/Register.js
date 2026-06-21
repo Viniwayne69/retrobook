@@ -7,8 +7,8 @@ export const Register = {
   async render(ctx) {
     const setup = ctx.hasSupabaseConfig ? "" : `
       <div class="setup-note">
-        <strong>Supabase ainda nao configurado.</strong>
-        <span>O cadastro sera ativado depois que as variaveis do ambiente forem preenchidas.</span>
+        <strong>Supabase ainda não configurado.</strong>
+        <span>O cadastro será ativado depois que as variáveis do ambiente forem preenchidas.</span>
       </div>
     `;
 
@@ -18,8 +18,8 @@ export const Register = {
       children: `
         <div class="auth-heading">
           <p class="eyebrow">Novo perfil</p>
-          <h1>Crie sua presenca entre leitores.</h1>
-          <p>Seu perfil mostra quem voce e, o livro que esta lendo e as reflexoes que decidir compartilhar.</p>
+          <h1>Crie sua presença entre leitores.</h1>
+          <p>Seu perfil mostra quem você é, o livro que está lendo e as reflexões que decidir compartilhar.</p>
         </div>
 
         <form class="stacked-form two-columns auth-form" data-register-form>
@@ -29,13 +29,13 @@ export const Register = {
           </div>
 
           <div>
-            <label for="username">ID de usuario</label>
+            <label for="username">ID de usuário</label>
             <input id="username" name="username" type="text" autocomplete="username" placeholder="vinicius" required>
           </div>
 
           <div>
             <label for="email">Email</label>
-            <input id="email" name="email" type="email" autocomplete="email" placeholder="voce@email.com" required>
+            <input id="email" name="email" type="email" autocomplete="email" placeholder="seu@email.com" required>
           </div>
 
           <div>
@@ -49,8 +49,8 @@ export const Register = {
           </div>
 
           <div>
-            <label for="current-book">Livro que esta lendo</label>
-            <input id="current-book" name="current_book" type="text" placeholder="Abolicao do homem" required>
+            <label for="current-book">Livro que está lendo</label>
+            <input id="current-book" name="current_book" type="text" placeholder="Abolição do homem" required>
           </div>
 
           <div class="span-columns">
@@ -61,7 +61,7 @@ export const Register = {
           ${Button({ label: "Fazer cadastro", type: "submit", variant: "primary", className: "full span-columns" })}
         </form>
 
-        <p class="form-note">Ja tem uma conta? <a href="/login" data-link>Entrar no Retrobook</a>.</p>
+        <p class="form-note">Já tem uma conta? <a href="/login" data-link>Entrar no Retrobook</a>.</p>
       `
     });
   },
@@ -84,10 +84,10 @@ export const Register = {
           ctx.toast("Seu perfil nasceu no Retrobook.");
         } else {
           ctx.navigate("/login");
-          ctx.toast("Cadastro criado. Se o Supabase pedir confirmacao por email, confirme antes de entrar.");
+          ctx.toast("Cadastro criado. Se o Supabase pedir confirmação por email, confirme antes de entrar.");
         }
       } catch (error) {
-        ctx.toast(error.message || "Nao foi possivel criar sua conta.");
+        ctx.toast(error.message || "Não foi possível criar sua conta.");
       }
     });
   }

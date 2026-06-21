@@ -43,7 +43,7 @@ export function Header({ user, profile, path }) {
 
   const bottomNav = isAuthed
     ? `
-      <nav class="bottom-nav" aria-label="Navegacao inferior">
+      <nav class="bottom-nav" aria-label="Navegação inferior">
         ${bottomItems.map((item) => {
           const active = !item.action && (path === item.path || path.startsWith(`${item.path}/`));
           return `
@@ -64,15 +64,15 @@ export function Header({ user, profile, path }) {
         <span>Retrobook</span>
       </a>
 
-      <button class="nav-toggle" type="button" aria-label="Abrir navegacao" aria-expanded="false" data-menu-toggle>
+      <button class="nav-toggle" type="button" aria-label="Abrir navegação" aria-expanded="false" data-menu-toggle>
         ${Icon("menu")}
       </button>
 
-      <button class="header-icon-button" type="button" aria-label="Notificacoes">
+      <button class="header-icon-button" type="button" aria-label="Notificações">
         ${Icon("bell")}
       </button>
 
-      <nav class="main-nav" aria-label="Navegacao principal">
+      <nav class="main-nav" aria-label="Navegação principal">
         ${nav}
       </nav>
 

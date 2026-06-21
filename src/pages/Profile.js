@@ -13,8 +13,8 @@ export const Profile = {
     if (!loadedProfile && !isOwnProfile) {
       return `
         <section class="social-empty app-card">
-          <h1>Perfil nao encontrado</h1>
-          <p>Esse leitor ainda nao tem um perfil publico no Retrobook.</p>
+          <h1>Perfil não encontrado</h1>
+          <p>Esse leitor ainda não tem um perfil público no Retrobook.</p>
           <a class="btn btn-primary primary-button" href="/pesquisar" data-link>Voltar para pesquisa</a>
         </section>
       `;
@@ -40,7 +40,7 @@ export const Profile = {
       : `
         <section class="social-empty app-card">
           <h2>Nenhum post publicado ainda</h2>
-          <p>Quando voce publicar no feed, seus textos tambem aparecem aqui no perfil.</p>
+          <p>Quando você publicar no feed, seus textos também aparecem aqui no perfil.</p>
           <a class="btn btn-primary primary-button" href="/publicar" data-link>Publicar agora</a>
         </section>
       `;
@@ -51,7 +51,7 @@ export const Profile = {
 
         <section class="profile-reading app-card">
           <span>Leitura atual</span>
-          <strong>${escapeHtml(profile.name || "Leitor")} esta lendo ${escapeHtml(profile.current_book || "um livro ainda nao informado")}</strong>
+          <strong>${escapeHtml(profile.name || "Leitor")} está lendo ${escapeHtml(profile.current_book || "um livro ainda não informado")}</strong>
         </section>
 
         ${isOwnProfile ? `<section class="profile-editor app-card">
@@ -64,7 +64,7 @@ export const Profile = {
               </div>
 
               <div>
-                <label for="username">ID de usuario</label>
+                <label for="username">ID de usuário</label>
                 <input id="username" name="username" type="text" value="${escapeHtml(profile.username || "")}" required>
               </div>
 
@@ -119,7 +119,7 @@ export const Profile = {
         ctx.toast("Perfil atualizado.");
         await ctx.refresh();
       } catch (error) {
-        ctx.toast(error.message || "Nao foi possivel salvar o perfil.");
+        ctx.toast(error.message || "Não foi possível salvar o perfil.");
       }
     });
 
@@ -136,7 +136,7 @@ export const Profile = {
           await togglePostLike(ctx.user.id, post);
           await ctx.refresh();
         } catch (error) {
-          ctx.toast(error.message || "Nao foi possivel curtir este post.");
+          ctx.toast(error.message || "Não foi possível curtir este post.");
         }
       });
     });
