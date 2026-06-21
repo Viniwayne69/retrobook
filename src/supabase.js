@@ -224,7 +224,7 @@ export async function listPosts(userId) {
   const database = client();
   const { data, error } = await database
     .from("posts")
-    .select("id, user_id, book_title, content, likes_count, created_at, profiles(name, username, avatar_url)")
+    .select("*, profiles(name, username, avatar_url, current_book)")
     .order("created_at", { ascending: false })
     .limit(80);
 
@@ -256,21 +256,81 @@ export async function listPosts(userId) {
 }
 
 export async function createPost(userId, payload) {
-  const { data, error } = await client()
+  const database = client();
+  const post = {
+    user_id: userId,
+    book_title: payload.book_title,
+    content: payload.content,
+    author_name: payload.author_name || null,
+    image_url: payload.image_url || null
+  };
+
+  const { data, error } = await database
     .from("posts")
-    .insert({
-      user_id: userId,
-      book_title: payload.book_title,
-      content: payload.content
-    })
+    .insert(post)
     .select()
     .single();
+
+  if (error) {
+    const message = String(error.message || "").toLowerCase();
+
+    if (!message.includes("author_name") && !message.includes("image_url") && !message.includes("column")) {
+      throw error;
+    }
+
+    const fallback = await database
+      .from("posts")
+      .insert({
+        user_id: userId,
+        book_title: payload.book_title,
+        content: payload.content
+      })
+      .select()
+      .single();
+
+    if (fallback.error) {
+      throw fallback.error;
+    }
+
+    return fallback.data;
+  }
+
+  return data;
+}
+
+export async function listPostsByUser(profileId, userId) {
+  const database = client();
+  const { data, error } = await database
+    .from("posts")
+    .select("*, profiles(name, username, avatar_url, current_book)")
+    .eq("user_id", profileId)
+    .order("created_at", { ascending: false });
 
   if (error) {
     throw error;
   }
 
-  return data;
+  const posts = data || [];
+  if (!posts.length) {
+    return [];
+  }
+
+  const postIds = posts.map((post) => post.id);
+  const { data: likes, error: likesError } = await database
+    .from("post_likes")
+    .select("post_id")
+    .eq("user_id", userId)
+    .in("post_id", postIds);
+
+  if (likesError) {
+    throw likesError;
+  }
+
+  const likedIds = new Set((likes || []).map((like) => like.post_id));
+  return posts.map((post) => ({
+    ...post,
+    user_liked: likedIds.has(post.id)
+  }));
 }
 
 export async function togglePostLike(userId, post) {
@@ -568,4 +628,123 @@ export async function addComment(userId, discussionId, content) {
   }
 
   return data;
+}
+
+export async function searchRetrobook(query, userId) {
+  const term = String(query || "").trim();
+
+  if (!term) {
+    return { profiles: [], tribes: [] };
+  }
+
+  const database = client();
+  const pattern = `%${term.replace(/[%_]/g, "")}%`;
+  const [profilesResult, tribesResult] = await Promise.all([
+    database
+      .from("profiles")
+      .select("id, name, username, bio, current_book, avatar_url")
+      .or(`username.ilike.${pattern},name.ilike.${pattern}`)
+      .limit(12),
+    database
+      .from("tribes")
+      .select("*")
+      .or(`name.ilike.${pattern},description.ilike.${pattern},category.ilike.${pattern}`)
+      .limit(12)
+  ]);
+
+  if (profilesResult.error) {
+    throw profilesResult.error;
+  }
+
+  if (tribesResult.error) {
+    throw tribesResult.error;
+  }
+
+  const tribes = tribesResult.data || [];
+  if (!tribes.length) {
+    return { profiles: profilesResult.data || [], tribes: [] };
+  }
+
+  const membershipsResult = await database
+    .from("tribe_members")
+    .select("tribe_id")
+    .eq("user_id", userId)
+    .in("tribe_id", tribes.map((tribe) => tribe.id));
+
+  if (membershipsResult.error) {
+    throw membershipsResult.error;
+  }
+
+  const joinedIds = new Set((membershipsResult.data || []).map((membership) => membership.tribe_id));
+
+  return {
+    profiles: profilesResult.data || [],
+    tribes: tribes.map((tribe) => ({
+      ...tribe,
+      user_joined: joinedIds.has(tribe.id)
+    }))
+  };
+}
+
+export async function listConversations(userId) {
+  const database = client();
+  const { data, error } = await database
+    .from("conversation_members")
+    .select("conversation_id, unread_count, conversations(id, title, type, tribe_id, updated_at, tribes(name, members_count))")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    if (isMissingOptionalTable(error)) {
+      return [];
+    }
+
+    throw error;
+  }
+
+  return (data || []).map((item) => ({
+    ...item.conversations,
+    unread_count: item.unread_count || 0
+  }));
+}
+
+export async function listMessages(conversationId) {
+  const { data, error } = await client()
+    .from("messages")
+    .select("id, conversation_id, sender_id, content, created_at, profiles(name, username, avatar_url)")
+    .eq("conversation_id", conversationId)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    if (isMissingOptionalTable(error)) {
+      return [];
+    }
+
+    throw error;
+  }
+
+  return data || [];
+}
+
+export async function sendMessage(conversationId, userId, content) {
+  const { data, error } = await client()
+    .from("messages")
+    .insert({
+      conversation_id: conversationId,
+      sender_id: userId,
+      content
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+function isMissingOptionalTable(error) {
+  const message = String(error?.message || "").toLowerCase();
+  return error?.code === "42P01" || message.includes("does not exist") || message.includes("schema cache");
 }

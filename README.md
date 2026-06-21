@@ -1,22 +1,25 @@
-# Retrobooks
+# Retrobook
 
-Retrobooks é uma rede social literária para leitores encontrarem pessoas que estão lendo o mesmo livro, criarem tribos, publicarem reflexões e participarem de discussões.
+Retrobook e uma rede social literaria para leitores se conectarem pelos livros que estao lendo.
 
-Este MVP usa Vite com HTML, CSS e JavaScript puro no front-end, além de Supabase para autenticação, banco de dados e políticas de segurança.
+O MVP usa Vite com HTML, CSS e JavaScript puro no front-end, alem de Supabase para autenticacao, banco de dados e politicas de seguranca.
 
 ## Funcionalidades
 
 - Cadastro e login com Supabase Auth
-- Perfil de leitor com edição de nome, username, bio, livro atual, autor favorito e avatar URL opcional
-- Feed com criação de posts, listagem, curtidas e salvamento visual no navegador
-- Tribos literárias com criação, entrada e página de detalhes
-- Discussões por tribo com comentários
-- Página visual de Fiódor Dostoiévski com obras, citações e entrada na Tribo Dostoiévski
-- Dados iniciais de tribos e posts simulados quando o banco ainda está vazio
+- Login e cadastro com slider visual de autores literarios
+- Perfil de leitor com nome, ID de usuario, bio, livro atual, autor favorito e avatar opcional
+- Feed social com posts reais, curtidas, salvamento visual e pagina separada para publicar
+- Publicacao com texto, livro relacionado, autor opcional e foto opcional por URL
+- Pesquisa de leitores por ID e clubes por nome
+- Mensagens com estrutura para conversas individuais e conversas de clubes
+- Tribos literarias com criacao, entrada e pagina de detalhes
+- Discussoes por tribo com comentarios
+- Dados iniciais de tribos quando o banco ainda esta vazio
 
-## Instalação
+## Instalacao
 
-Instale as dependências:
+Instale as dependencias:
 
 ```bash
 npm install
@@ -43,24 +46,17 @@ VITE_SUPABASE_PUBLISHABLE_KEY=sua_chave_publishable_do_supabase
 3. Copie a Project URL para `VITE_SUPABASE_URL`.
 4. Copie a anon public key para `VITE_SUPABASE_ANON_KEY` ou a publishable key para `VITE_SUPABASE_PUBLISHABLE_KEY`.
 5. Em Authentication, configure Email como provedor de login.
-6. Para testar o MVP com menos fricção, você pode desativar a confirmação de email durante o desenvolvimento.
+6. Para testar o MVP com menos friccao, voce pode desativar a confirmacao de email durante o desenvolvimento.
 
 ## Aplicando o banco de dados
 
 1. No Supabase, abra SQL Editor.
-2. Copie todo o conteúdo de `supabase-schema.sql`.
+2. Copie todo o conteudo de `supabase-schema.sql`.
 3. Execute o SQL.
 
-O schema cria as tabelas `profiles`, `posts`, `post_likes`, `tribes`, `tribe_members`, `discussions` e `comments`, além das políticas RLS e triggers para criar perfil automaticamente, atualizar curtidas e atualizar contagem de membros.
+O schema cria as tabelas `profiles`, `posts`, `post_likes`, `tribes`, `tribe_members`, `discussions`, `comments`, `conversations`, `conversation_members` e `messages`, alem das politicas RLS e triggers.
 
-As tribos iniciais inseridas são:
-
-- Tribo Dostoiévski
-- Clube Machado de Assis
-- Leituras Existenciais
-- Poesia e Devaneios
-- Filosofia Antiga
-- Tolkien Sociedade
+O arquivo tambem adiciona campos opcionais em `posts` para `author_name` e `image_url`, usados pela tela Publicar. Se o app ja estiver em producao, execute novamente `supabase-schema.sql` no SQL Editor para aplicar essa evolucao sem apagar os dados existentes.
 
 ## Rodando localmente
 
@@ -70,19 +66,19 @@ Depois de configurar o `.env`, rode:
 npm run dev
 ```
 
-Abra a URL indicada pelo Vite no navegador. O app redireciona usuários logados para o feed e protege as páginas internas para quem ainda não entrou.
+Abra a URL indicada pelo Vite no navegador.
 
 ## Deploy na Vercel
 
-1. Envie o projeto para um repositório Git.
-2. Na Vercel, importe o repositório.
+1. Envie o projeto para um repositorio Git.
+2. Na Vercel, importe o repositorio.
 3. Use Vite como preset.
 4. Configure o build command como `npm run build`.
 5. Configure o output directory como `dist`.
 6. Adicione `VITE_SUPABASE_URL` e pelo menos uma chave, `VITE_SUPABASE_ANON_KEY` ou `VITE_SUPABASE_PUBLISHABLE_KEY`, em Environment Variables.
-7. Faça o deploy.
+7. Faca o deploy.
 
-O arquivo `vercel.json` mantém as rotas do SPA funcionando quando alguém acessa uma página interna diretamente.
+O arquivo `vercel.json` mantem as rotas do SPA funcionando quando alguem acessa uma pagina interna diretamente.
 
 ## Estrutura
 
@@ -98,12 +94,16 @@ src/
     Login.js
     Register.js
     Feed.js
+    Publish.js
+    Search.js
+    Messages.js
     Tribes.js
     TribeDetails.js
     Author.js
     Discussion.js
     Profile.js
   components/
+    AuthFrame.js
     Header.js
     PostCard.js
     TribeCard.js
@@ -112,10 +112,9 @@ src/
     Button.js
 ```
 
-## Próximos passos naturais
+## Proximos passos naturais
 
-- Criar upload real de avatar com Supabase Storage
-- Adicionar edição e exclusão de posts
-- Criar busca por livro, autor e tribo
-- Criar notificações de comentários
-- Melhorar ranking de posts e recomendações de leitores
+- Criar upload real de avatar e fotos dos posts com Supabase Storage
+- Adicionar comentarios por post
+- Criar criacao direta de conversas individuais pela pesquisa
+- Melhorar recomendacoes de leitores e clubes

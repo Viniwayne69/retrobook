@@ -1,61 +1,107 @@
 import { Button } from "../components/Button.js";
+import { PostCard } from "../components/PostCard.js";
 import { ProfileCard } from "../components/ProfileCard.js";
-import { getProfileStats, saveProfile } from "../supabase.js";
+import { getProfile, getProfileStats, listPostsByUser, saveProfile, togglePostLike } from "../supabase.js";
 import { escapeHtml, formDataToObject, normalizeUsername } from "../utils.js";
 
 export const Profile = {
   async render(ctx) {
-    const profile = ctx.profile || {
+    const profileId = ctx.params.id || ctx.user.id;
+    const isOwnProfile = profileId === ctx.user.id;
+    const loadedProfile = isOwnProfile ? ctx.profile : await getProfile(profileId);
+
+    if (!loadedProfile && !isOwnProfile) {
+      return `
+        <section class="social-empty app-card">
+          <h1>Perfil nao encontrado</h1>
+          <p>Esse leitor ainda nao tem um perfil publico no Retrobook.</p>
+          <a class="btn btn-primary primary-button" href="/pesquisar" data-link>Voltar para pesquisa</a>
+        </section>
+      `;
+    }
+
+    const profile = loadedProfile || {
       name: ctx.user.email,
       username: "leitor",
       bio: "",
       current_book: "",
-      favorite_author: ""
+      favorite_author: "",
+      avatar_url: ""
     };
-    const stats = await getProfileStats(ctx.user.id);
+    const [stats, posts] = await Promise.all([
+      getProfileStats(profileId),
+      listPostsByUser(profileId, ctx.user.id)
+    ]);
+    ctx.currentPosts = posts;
+    ctx.isOwnProfile = isOwnProfile;
+
+    const postList = posts.length
+      ? posts.map((post) => PostCard(post, ctx.state.savedPosts.has(post.id))).join("")
+      : `
+        <section class="social-empty app-card">
+          <h2>Nenhum post publicado ainda</h2>
+          <p>Quando voce publicar no feed, seus textos tambem aparecem aqui no perfil.</p>
+          <a class="btn btn-primary primary-button" href="/publicar" data-link>Publicar agora</a>
+        </section>
+      `;
 
     return `
-      ${ProfileCard(profile, stats)}
+      <section class="profile-social-page">
+        ${ProfileCard(profile, stats)}
 
-      <section class="split-grid profile-grid">
-        <article class="paper-card">
-          <h2>Estante atual</h2>
-          <dl class="reader-details">
-            <div>
-              <dt>Livro atual</dt>
-              <dd>${escapeHtml(profile.current_book || "Ainda não informado")}</dd>
-            </div>
-            <div>
-              <dt>Autor favorito</dt>
-              <dd>${escapeHtml(profile.favorite_author || "Ainda não informado")}</dd>
-            </div>
-          </dl>
-        </article>
+        <section class="profile-reading app-card">
+          <span>Leitura atual</span>
+          <strong>${escapeHtml(profile.name || "Leitor")} esta lendo ${escapeHtml(profile.current_book || "um livro ainda nao informado")}</strong>
+        </section>
 
-        <article class="paper-card form-panel">
-          <h2>Editar perfil</h2>
-          <form class="stacked-form" data-profile-form>
-            <label for="name">Nome</label>
-            <input id="name" name="name" type="text" value="${escapeHtml(profile.name || "")}" required>
+        ${isOwnProfile ? `<section class="profile-editor app-card">
+          <details>
+            <summary>Editar perfil</summary>
+            <form class="stacked-form two-columns" data-profile-form>
+              <div>
+                <label for="name">Nome</label>
+                <input id="name" name="name" type="text" value="${escapeHtml(profile.name || "")}" required>
+              </div>
 
-            <label for="username">Username</label>
-            <input id="username" name="username" type="text" value="${escapeHtml(profile.username || "")}" required>
+              <div>
+                <label for="username">ID de usuario</label>
+                <input id="username" name="username" type="text" value="${escapeHtml(profile.username || "")}" required>
+              </div>
 
-            <label for="current-book">Livro atual</label>
-            <input id="current-book" name="current_book" type="text" value="${escapeHtml(profile.current_book || "")}">
+              <div>
+                <label for="current-book">Livro atual</label>
+                <input id="current-book" name="current_book" type="text" value="${escapeHtml(profile.current_book || "")}">
+              </div>
 
-            <label for="favorite-author">Autor favorito</label>
-            <input id="favorite-author" name="favorite_author" type="text" value="${escapeHtml(profile.favorite_author || "")}">
+              <div>
+                <label for="favorite-author">Autor favorito</label>
+                <input id="favorite-author" name="favorite_author" type="text" value="${escapeHtml(profile.favorite_author || "")}">
+              </div>
 
-            <label for="avatar-url">Avatar URL opcional</label>
-            <input id="avatar-url" name="avatar_url" type="url" value="${escapeHtml(profile.avatar_url || "")}" placeholder="https://exemplo.com/avatar.jpg">
+              <div class="span-columns">
+                <label for="avatar-url">Foto de perfil opcional</label>
+                <input id="avatar-url" name="avatar_url" type="url" value="${escapeHtml(profile.avatar_url || "")}" placeholder="https://exemplo.com/foto.jpg">
+              </div>
 
-            <label for="bio">Bio</label>
-            <textarea id="bio" name="bio" rows="5">${escapeHtml(profile.bio || "")}</textarea>
+              <div class="span-columns">
+                <label for="bio">Biografia</label>
+                <textarea id="bio" name="bio" rows="4">${escapeHtml(profile.bio || "")}</textarea>
+              </div>
 
-            ${Button({ label: "Salvar perfil", type: "submit", variant: "primary", className: "full" })}
-          </form>
-        </article>
+              ${Button({ label: "Salvar perfil", type: "submit", variant: "primary", className: "full span-columns" })}
+            </form>
+          </details>
+        </section>` : ""}
+
+        <section class="profile-posts">
+          <div class="section-heading paper-heading">
+            <h2 class="section-title">Publicacoes</h2>
+            <a href="/publicar" data-link>Novo post</a>
+          </div>
+          <div class="post-list social-post-list">
+            ${postList}
+          </div>
+        </section>
       </section>
     `;
   },
@@ -73,8 +119,33 @@ export const Profile = {
         ctx.toast("Perfil atualizado.");
         await ctx.refresh();
       } catch (error) {
-        ctx.toast(error.message || "Não foi possível salvar o perfil.");
+        ctx.toast(error.message || "Nao foi possivel salvar o perfil.");
       }
+    });
+
+    document.querySelectorAll("[data-like-post]").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const postId = button.dataset.likePost;
+        const post = ctx.currentPosts.find((item) => item.id === postId);
+
+        if (!post) {
+          return;
+        }
+
+        try {
+          await togglePostLike(ctx.user.id, post);
+          await ctx.refresh();
+        } catch (error) {
+          ctx.toast(error.message || "Nao foi possivel curtir este post.");
+        }
+      });
+    });
+
+    document.querySelectorAll("[data-save-post]").forEach((button) => {
+      button.addEventListener("click", () => {
+        ctx.toggleSavedPost(button.dataset.savePost);
+        ctx.toast("Post salvo neste navegador.");
+      });
     });
   }
 };

@@ -8,6 +8,9 @@ import { TribeDetails } from "./pages/TribeDetails.js";
 import { Author } from "./pages/Author.js";
 import { Discussion } from "./pages/Discussion.js";
 import { Profile } from "./pages/Profile.js";
+import { Publish } from "./pages/Publish.js";
+import { Search } from "./pages/Search.js";
+import { Messages } from "./pages/Messages.js";
 import { getProfile, getSession, hasSupabaseConfig, signOutUser, supabase } from "./supabase.js";
 import { escapeHtml } from "./utils.js";
 
@@ -19,12 +22,16 @@ const routes = [
   { pattern: /^\/cadastro\/?$/, page: Register, public: true, redirectIfAuth: true },
   { pattern: /^\/register\/?$/, page: Register, public: true, redirectIfAuth: true },
   { pattern: /^\/feed\/?$/, page: Feed, protected: true },
+  { pattern: /^\/publicar\/?$/, page: Publish, protected: true },
+  { pattern: /^\/pesquisar\/?$/, page: Search, protected: true },
+  { pattern: /^\/mensagens\/?$/, page: Messages, protected: true },
   { pattern: /^\/tribos\/?$/, page: Tribes, protected: true },
   { pattern: /^\/tribos\/([^/]+)\/?$/, page: TribeDetails, protected: true, params: ["slug"] },
   { pattern: /^\/autor\/?$/, page: Author, protected: true },
   { pattern: /^\/discussao\/?$/, page: Discussion, protected: true },
   { pattern: /^\/discussao\/([^/]+)\/?$/, page: Discussion, protected: true, params: ["id"] },
-  { pattern: /^\/perfil\/?$/, page: Profile, protected: true }
+  { pattern: /^\/perfil\/?$/, page: Profile, protected: true },
+  { pattern: /^\/perfil\/([^/]+)\/?$/, page: Profile, protected: true, params: ["id"] }
 ];
 
 const state = {
@@ -126,7 +133,7 @@ async function renderRoute() {
 }
 
 function layout(content, path) {
-  const theme = state.user ? "theme-dark" : "theme-light";
+  const theme = state.user ? "social-shell" : "theme-light";
   const isAuthRoute = path === "/login" || path === "/cadastro" || path === "/register";
 
   return `

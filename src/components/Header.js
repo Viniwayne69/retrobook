@@ -2,17 +2,17 @@ import { escapeHtml } from "../utils.js";
 
 const navItems = [
   { label: "Feed", path: "/feed", icon: "home" },
-  { label: "Tribos", path: "/tribos", icon: "tribes" },
-  { label: "Autor", path: "/autor", icon: "book" },
-  { label: "Discussao", path: "/discussao", icon: "discussion" },
+  { label: "Pesquisar", path: "/pesquisar", icon: "search" },
+  { label: "Publicar", path: "/publicar", icon: "plus" },
+  { label: "Mensagens", path: "/mensagens", icon: "messages" },
   { label: "Perfil", path: "/perfil", icon: "profile" }
 ];
 
 const bottomItems = [
-  { label: "Inicio", path: "/feed", icon: "home" },
-  { label: "Explorar", path: "/tribos", icon: "search" },
-  { label: "Publicar", path: "/feed", icon: "plus", action: true },
-  { label: "Mensagens", path: "/discussao", icon: "messages" },
+  { label: "Feed", path: "/feed", icon: "home" },
+  { label: "Pesquisar", path: "/pesquisar", icon: "search" },
+  { label: "Publicar", path: "/publicar", icon: "plus", action: true },
+  { label: "Mensagens", path: "/mensagens", icon: "messages" },
   { label: "Perfil", path: "/perfil", icon: "profile" }
 ];
 

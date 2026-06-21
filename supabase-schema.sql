@@ -396,3 +396,101 @@ insert into public.tribes (
   (null, 'Filosofia Antiga', 'filosofia-antiga', 'Leitores de Platão, Aristóteles, Sêneca e Marco Aurélio em busca de uma vida examinada com serenidade.', 'Filosofia clássica', 'Filosofia'),
   (null, 'Tolkien Sociedade', 'tolkien-sociedade', 'Mapas, línguas antigas, jornadas longas e aquela coragem pequena que nasce quando alguém decide continuar.', 'J. R. R. Tolkien', 'Fantasia clássica')
 on conflict (slug) do nothing;
+
+-- Social app evolution
+alter table public.posts
+add column if not exists author_name text,
+add column if not exists image_url text;
+
+create table if not exists public.conversations (
+  id uuid primary key default gen_random_uuid(),
+  title text,
+  type text not null default 'direct' check (type in ('direct', 'club')),
+  tribe_id uuid references public.tribes(id) on delete cascade,
+  created_by uuid references public.profiles(id) on delete set null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.conversation_members (
+  id uuid primary key default gen_random_uuid(),
+  conversation_id uuid not null references public.conversations(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  unread_count integer not null default 0,
+  created_at timestamptz not null default now(),
+  unique (conversation_id, user_id)
+);
+
+create table if not exists public.messages (
+  id uuid primary key default gen_random_uuid(),
+  conversation_id uuid not null references public.conversations(id) on delete cascade,
+  sender_id uuid not null references public.profiles(id) on delete cascade,
+  content text not null,
+  created_at timestamptz not null default now()
+);
+
+alter table public.conversations enable row level security;
+alter table public.conversation_members enable row level security;
+alter table public.messages enable row level security;
+
+drop policy if exists "Conversation members can read conversations" on public.conversations;
+drop policy if exists "Authenticated users can create conversations" on public.conversations;
+drop policy if exists "Conversation members are readable by members" on public.conversation_members;
+drop policy if exists "Authenticated users can join conversations" on public.conversation_members;
+drop policy if exists "Conversation members can read messages" on public.messages;
+drop policy if exists "Conversation members can send messages" on public.messages;
+
+create policy "Conversation members can read conversations"
+on public.conversations for select
+to authenticated
+using (
+  exists (
+    select 1 from public.conversation_members cm
+    where cm.conversation_id = conversations.id
+    and cm.user_id = auth.uid()
+  )
+);
+
+create policy "Authenticated users can create conversations"
+on public.conversations for insert
+to authenticated
+with check (auth.uid() = created_by);
+
+create policy "Conversation members are readable by members"
+on public.conversation_members for select
+to authenticated
+using (
+  exists (
+    select 1 from public.conversation_members cm
+    where cm.conversation_id = conversation_members.conversation_id
+    and cm.user_id = auth.uid()
+  )
+);
+
+create policy "Authenticated users can join conversations"
+on public.conversation_members for insert
+to authenticated
+with check (auth.uid() = user_id);
+
+create policy "Conversation members can read messages"
+on public.messages for select
+to authenticated
+using (
+  exists (
+    select 1 from public.conversation_members cm
+    where cm.conversation_id = messages.conversation_id
+    and cm.user_id = auth.uid()
+  )
+);
+
+create policy "Conversation members can send messages"
+on public.messages for insert
+to authenticated
+with check (
+  auth.uid() = sender_id
+  and exists (
+    select 1 from public.conversation_members cm
+    where cm.conversation_id = messages.conversation_id
+    and cm.user_id = auth.uid()
+  )
+);
