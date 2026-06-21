@@ -95,7 +95,7 @@ export const Profile = {
 
         <section class="profile-posts">
           <div class="section-heading paper-heading">
-            <h2 class="section-title">Publicacoes</h2>
+            <h2 class="section-title">Publicações</h2>
             <a href="/publicar" data-link>Novo post</a>
           </div>
           <div class="post-list social-post-list">

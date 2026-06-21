@@ -38,7 +38,7 @@ export const Feed = {
             <div>
               <p class="eyebrow">Feed</p>
               <h1>${getGreeting()}, ${escapeHtml(name)}.</h1>
-              <p>Pessoas se conectam pelos livros que estao lendo.</p>
+              <p>Pessoas se conectam pelos livros que estão lendo.</p>
             </div>
             <a class="btn btn-primary primary-button" href="/publicar" data-link>Publicar</a>
           </header>

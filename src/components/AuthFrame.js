@@ -5,14 +5,6 @@ export function AuthFrame({ mode = "login", setup = "", children = "" }) {
     <section class="auth-experience">
       <div class="auth-card-shell">
         <aside class="auth-visual" aria-label="Autores que inspiram o Retrobook">
-          <div class="auth-brand-lockup">
-            <span class="auth-brand-mark">R</span>
-            <div>
-              <strong>Retrobook</strong>
-              <span>Pessoas se conectam pelos livros que estão lendo.</span>
-            </div>
-          </div>
-
           <div class="auth-slider" aria-hidden="true">
             ${Slide("/auth/cs-lewis.jpg", "C. S. Lewis", "Leitura, imaginação e fé")}
             ${Slide("/auth/clarice.jpg", "Clarice Lispector", "Intimidade, linguagem e espanto")}

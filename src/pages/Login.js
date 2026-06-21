@@ -18,8 +18,7 @@ export const Login = {
       children: `
         <div class="auth-heading">
           <p class="eyebrow">Entre na sua conta</p>
-          <h1>Volte para a sua estante.</h1>
-          <p>Continue suas conversas, seus clubes e suas leituras em um lugar simples, calmo e bem organizado.</p>
+          <p>Acesse seu perfil, suas leituras e suas conversas.</p>
         </div>
 
         <div class="auth-alert" data-confirmation-alert hidden>

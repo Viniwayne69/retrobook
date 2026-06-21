@@ -1029,23 +1029,10 @@ textarea:focus {
   background: #1F3329;
 }
 
-.auth-brand-lockup,
 .auth-mobile-brand {
   display: flex;
   align-items: center;
   gap: 0.72rem;
-}
-
-.auth-brand-lockup {
-  position: absolute;
-  top: 0.85rem;
-  left: 0.85rem;
-  z-index: 5;
-  right: 0.85rem;
-  padding: 0.72rem;
-  border: 1px solid rgba(247, 241, 230, 0.22);
-  border-radius: 18px;
-  background: rgba(31, 51, 41, 0.92);
 }
 
 .auth-brand-mark {
@@ -1062,20 +1049,11 @@ textarea:focus {
   font-weight: 700;
 }
 
-.auth-brand-lockup strong,
 .auth-mobile-brand strong {
   display: block;
   font-family: var(--font-title);
   font-size: 1.45rem;
   line-height: 1;
-}
-
-.auth-brand-lockup span {
-  display: block;
-  margin-top: 0.22rem;
-  color: #F7F1E6;
-  font-size: 0.72rem;
-  font-weight: 600;
 }
 
 .auth-slider,
@@ -1121,7 +1099,7 @@ textarea:focus {
 .auth-slide figcaption {
   position: absolute;
   right: 1.5rem;
-  bottom: 3.15rem;
+  bottom: 3rem;
   left: 1.5rem;
   z-index: 3;
   color: #FFFDF8;
