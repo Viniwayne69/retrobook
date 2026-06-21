@@ -1,0 +1,62 @@
+export function AuthFrame({ mode = "login", setup = "", children = "" }) {
+  const isLogin = mode === "login";
+
+  return `
+    <section class="auth-experience">
+      <div class="auth-card-shell">
+        <aside class="auth-visual" aria-label="Autores que inspiram o Retrobook">
+          <div class="auth-brand-lockup">
+            <span class="auth-brand-mark">R</span>
+            <div>
+              <strong>Retrobook</strong>
+              <span>Pessoas se conectam pelos livros que estao lendo.</span>
+            </div>
+          </div>
+
+          <div class="auth-slider" aria-hidden="true">
+            ${Slide("/auth/cs-lewis.jpg", "C. S. Lewis", "Leitura, imaginacao e fe")}
+            ${Slide("/auth/clarice.jpg", "Clarice Lispector", "Intimidade, linguagem e espanto")}
+            ${Slide("/auth/dostoievski.jpg", "Fiodor Dostoievski", "Consciencia, culpa e liberdade")}
+            ${Slide("/auth/oscar-wilde.jpg", "Oscar Wilde", "Beleza, ironia e pensamento")}
+          </div>
+
+          <div class="auth-slider-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </aside>
+
+        <div class="auth-form-side">
+          <div class="auth-form-card">
+            <div class="auth-mobile-brand">
+              <span class="auth-brand-mark">R</span>
+              <strong>Retrobook</strong>
+            </div>
+
+            <nav class="auth-choice" aria-label="Escolha de autenticacao">
+              <a class="${isLogin ? "active" : ""}" href="/login" data-link>Entrar</a>
+              <a class="${isLogin ? "" : "active"}" href="/cadastro" data-link>Faca seu cadastro</a>
+            </nav>
+
+            ${setup}
+            ${children}
+          </div>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function Slide(src, name, text) {
+  return `
+    <figure class="auth-slide">
+      <img src="${src}" alt="">
+      <figcaption>
+        <strong>${name}</strong>
+        <span>${text}</span>
+      </figcaption>
+    </figure>
+  `;
+}

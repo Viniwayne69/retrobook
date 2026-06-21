@@ -1,3 +1,4 @@
+import { AuthFrame } from "../components/AuthFrame.js";
 import { Button } from "../components/Button.js";
 import { formDataToObject, normalizeUsername } from "../utils.js";
 import { registerUser } from "../supabase.js";
@@ -6,64 +7,63 @@ export const Register = {
   async render(ctx) {
     const setup = ctx.hasSupabaseConfig ? "" : `
       <div class="setup-note">
-        <strong>Supabase ainda não configurado.</strong>
-        <span>O cadastro será ativado depois que as variáveis do .env forem preenchidas.</span>
+        <strong>Supabase ainda nao configurado.</strong>
+        <span>O cadastro sera ativado depois que as variaveis do ambiente forem preenchidas.</span>
       </div>
     `;
 
-    return `
-      <section class="auth-layout wide">
-        <div class="auth-copy">
-          <p class="eyebrow">Nova conta</p>
-          <h1>Crie seu perfil de leitor</h1>
-          <p>Conte ao Retrobooks que livros caminham com você, que autor sempre volta ao seu pensamento e que tipo de conversa você procura.</p>
+    return AuthFrame({
+      mode: "register",
+      setup,
+      children: `
+        <div class="auth-heading">
+          <p class="eyebrow">Novo perfil</p>
+          <h1>Crie sua presenca entre leitores.</h1>
+          <p>Seu perfil mostra quem voce e, o livro que esta lendo e as reflexoes que decidir compartilhar.</p>
         </div>
 
-        <div class="paper-card form-panel">
-          ${setup}
-          <h2>Cadastro</h2>
-          <form class="stacked-form two-columns" data-register-form>
-            <div>
-              <label for="name">Nome</label>
-              <input id="name" name="name" type="text" autocomplete="name" placeholder="Ana Martins" required>
-            </div>
+        <form class="stacked-form two-columns auth-form" data-register-form>
+          <div>
+            <label for="name">Nome</label>
+            <input id="name" name="name" type="text" autocomplete="name" placeholder="Vinicius Ribeiro" required>
+          </div>
 
-            <div>
-              <label for="username">Username</label>
-              <input id="username" name="username" type="text" autocomplete="username" placeholder="anamartins" required>
-            </div>
+          <div>
+            <label for="username">ID de usuario</label>
+            <input id="username" name="username" type="text" autocomplete="username" placeholder="vinicius" required>
+          </div>
 
-            <div>
-              <label for="email">Email</label>
-              <input id="email" name="email" type="email" autocomplete="email" placeholder="ana@email.com" required>
-            </div>
+          <div>
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" placeholder="voce@email.com" required>
+          </div>
 
-            <div>
-              <label for="password">Senha</label>
-              <input id="password" name="password" type="password" autocomplete="new-password" placeholder="Crie uma senha" minlength="6" required>
-            </div>
+          <div>
+            <label for="password">Senha</label>
+            <input id="password" name="password" type="password" autocomplete="new-password" placeholder="Crie uma senha" minlength="6" required>
+          </div>
 
-            <div>
-              <label for="current-book">Livro atual</label>
-              <input id="current-book" name="current_book" type="text" placeholder="Crime e Castigo" required>
-            </div>
+          <div>
+            <label for="avatar-url">Foto de perfil opcional</label>
+            <input id="avatar-url" name="avatar_url" type="url" placeholder="https://exemplo.com/foto.jpg">
+          </div>
 
-            <div>
-              <label for="favorite-author">Autor favorito</label>
-              <input id="favorite-author" name="favorite_author" type="text" placeholder="Fiódor Dostoiévski" required>
-            </div>
+          <div>
+            <label for="current-book">Livro que esta lendo</label>
+            <input id="current-book" name="current_book" type="text" placeholder="Abolicao do homem" required>
+          </div>
 
-            <div class="span-columns">
-              <label for="bio">Bio</label>
-              <textarea id="bio" name="bio" rows="5" placeholder="Escreva um pequeno retrato da sua vida entre livros."></textarea>
-            </div>
+          <div class="span-columns">
+            <label for="bio">Biografia</label>
+            <textarea id="bio" name="bio" rows="4" placeholder="Conte um pouco sobre sua vida entre livros."></textarea>
+          </div>
 
-            ${Button({ label: "Criar perfil", type: "submit", variant: "primary", className: "full span-columns" })}
-          </form>
-          <p class="form-note">Já tem conta? <a href="/login" data-link>Entre no Retrobooks</a>.</p>
-        </div>
-      </section>
-    `;
+          ${Button({ label: "Fazer cadastro", type: "submit", variant: "primary", className: "full span-columns" })}
+        </form>
+
+        <p class="form-note">Ja tem uma conta? <a href="/login" data-link>Entrar no Retrobook</a>.</p>
+      `
+    });
   },
 
   async afterRender(ctx) {
@@ -75,18 +75,19 @@ export const Register = {
       try {
         const payload = formDataToObject(form);
         payload.username = normalizeUsername(payload.username);
+        payload.favorite_author = "";
         await registerUser(payload, `${window.location.origin}/login`);
         await ctx.refresh();
 
         if (ctx.state.user) {
           ctx.navigate("/feed");
-          ctx.toast("Seu perfil literário nasceu no Retrobooks.");
+          ctx.toast("Seu perfil nasceu no Retrobook.");
         } else {
           ctx.navigate("/login");
-          ctx.toast("Cadastro criado. Se o Supabase pedir confirmação por email, confirme antes de entrar.");
+          ctx.toast("Cadastro criado. Se o Supabase pedir confirmacao por email, confirme antes de entrar.");
         }
       } catch (error) {
-        ctx.toast(error.message || "Não foi possível criar sua conta.");
+        ctx.toast(error.message || "Nao foi possivel criar sua conta.");
       }
     });
   }

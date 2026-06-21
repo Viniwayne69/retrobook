@@ -127,10 +127,11 @@ async function renderRoute() {
 
 function layout(content, path) {
   const theme = state.user ? "theme-dark" : "theme-light";
+  const isAuthRoute = path === "/login" || path === "/cadastro" || path === "/register";
 
   return `
-    <div class="app-shell ${theme}">
-      ${Header({ user: state.user, profile: state.profile, path })}
+    <div class="app-shell ${theme} ${isAuthRoute ? "auth-shell" : ""}">
+      ${isAuthRoute ? "" : Header({ user: state.user, profile: state.profile, path })}
       <main class="app-main">${content}</main>
       <div class="toast" role="status" aria-live="polite"></div>
     </div>
