@@ -6,7 +6,7 @@ export const Home = {
       <section class="home-clean">
         <div class="home-clean-copy">
           <p class="eyebrow">Rede social literária</p>
-          <h1>Retrobooks</h1>
+          <h1>Retrobook</h1>
           <p class="hero-slogan">Um lugar para leitores encontrarem leitores.</p>
           <p class="hero-text">Crie seu perfil, publique reflexões reais sobre os livros que você está lendo, entre em tribos literárias e participe de discussões com outras pessoas.</p>
           <div class="hero-actions">

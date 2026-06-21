@@ -1,7 +1,12 @@
 import { escapeHtml } from "../utils.js";
 
 export function Button({ label, href = "", variant = "primary", type = "button", className = "", attrs = "" }) {
-  const classes = `btn btn-${variant} ${className}`.trim();
+  const themeClass = variant === "primary"
+    ? "primary-button"
+    : variant === "secondary"
+      ? "secondary-button"
+      : "";
+  const classes = `btn btn-${variant} ${themeClass} ${className}`.trim();
 
   if (href) {
     return `<a class="${classes}" href="${href}" data-link ${attrs}>${escapeHtml(label)}</a>`;

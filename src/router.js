@@ -126,10 +126,14 @@ async function renderRoute() {
 }
 
 function layout(content, path) {
+  const theme = state.user ? "theme-dark" : "theme-light";
+
   return `
-    ${Header({ user: state.user, profile: state.profile, path })}
-    <main class="app-main">${content}</main>
-    <div class="toast" role="status" aria-live="polite"></div>
+    <div class="app-shell ${theme}">
+      ${Header({ user: state.user, profile: state.profile, path })}
+      <main class="app-main">${content}</main>
+      <div class="toast" role="status" aria-live="polite"></div>
+    </div>
   `;
 }
 

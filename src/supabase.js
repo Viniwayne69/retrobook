@@ -458,6 +458,20 @@ export async function listDiscussionsByTribe(tribeId) {
   return data || [];
 }
 
+export async function listRecentDiscussions(limit = 3) {
+  const { data, error } = await client()
+    .from("discussions")
+    .select("id, tribe_id, user_id, title, question, book_title, chapter, created_at, profiles(name, username), tribes(name, slug)")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    throw error;
+  }
+
+  return data || [];
+}
+
 export async function createDiscussion(userId, payload) {
   const { data, error } = await client()
     .from("discussions")
